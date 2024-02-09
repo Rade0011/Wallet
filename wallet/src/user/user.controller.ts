@@ -14,7 +14,7 @@ export class UserController {
   }
 
   @Get()
-  findOne(id: number) {
-    return this.userService.findOne(id);
+  findOne(email: string) {
+    return this.userService.findOne(email);
   }
 }
