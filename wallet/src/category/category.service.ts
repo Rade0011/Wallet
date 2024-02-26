@@ -4,6 +4,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
+import { error } from 'console';
 
 @Injectable()
 export class CategoryService {
@@ -57,29 +58,33 @@ export class CategoryService {
  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
   try {  
     await this.findCategory(id)
-    return await this.categoryRepository.update(id, updateCategoryDto)
-  } catch(e) {
-    throw new NotFoundException('this category not found ')
+    await this.categoryRepository.update(id, updateCategoryDto)
+    return this.categoryRepository.findOne({
+      where: {id}
+    })
+  } catch(error) {
+    throw error
   }
 }
  
-
   async remove(id: number) {
-   try{
-    await this.findCategory(id)
-    await this.categoryRepository.delete(id)
-  } catch(e) {
-    throw new NotFoundException('this category not found ')
+   const category = await this.findCategory(id)
+    try{
+    await this.categoryRepository.remove(category)
+    return category
+  } catch(error) {
+    throw error
   };
 }
 
-  async findCategory(id: number) {
-    const category = await this.categoryRepository.findOne({
+  async findCategory(id: number): Promise<Category> {
+    try {
+    const category = await this.categoryRepository.findOneOrFail({
       where: {id}
-    })
-    if (!category) {
-      throw new NotFoundException('this category not found')
-    }
-    return category
+    });
+    return category;
+  } catch(error) {
+    throw new BadRequestException('This category not found')
+  }
   }
 }

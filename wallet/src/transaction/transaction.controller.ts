@@ -1,35 +1,50 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, ValidationPipe, UseGuards, Req, Query } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards';
 
-@Controller('transaction')
+@Controller('transactions')
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
   @Post()
   @UsePipes(new ValidationPipe())
-  async create(@Body() createTransactionDto: CreateTransactionDto) {
-    return this.transactionService.create(createTransactionDto);
+  @UseGuards(JwtAuthGuard)
+  async create(@Body() createTransactionDto: CreateTransactionDto, @Req() req) {
+    return this.transactionService.create(createTransactionDto, +req.user.id);
+  }
+
+  @Get('pagination')
+  @UseGuards(JwtAuthGuard)
+  async findAllWithPagination(
+    @Req() req, 
+    @Query('page') page: number, 
+    @Query('limit') limit: number) {
+    return this.transactionService.findAllWithPagination(+req.user.id, +page, +limit)
   }
 
   @Get()
-  findAll() {
-    return this.transactionService.findAll();
+  @UseGuards(JwtAuthGuard)
+  async findAll(@Req() req) {
+    return this.transactionService.findAll(+req.user.id);
   }
-
+  
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  @UseGuards(JwtAuthGuard)
+  async findOne(@Param('id') id: string) {
     return this.transactionService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTransactionDto: UpdateTransactionDto) {
+  @UseGuards(JwtAuthGuard)
+  async update(@Param('id') id: string, @Body() updateTransactionDto: UpdateTransactionDto) {
     return this.transactionService.update(+id, updateTransactionDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  @UseGuards(JwtAuthGuard)
+  async remove(@Param('id') id: string) {
     return this.transactionService.remove(+id);
   }
 }

@@ -1,10 +1,10 @@
 import { Category } from "src/category/entities/category.entity";
 import { User } from "src/user/entities/user.entity";
-import { Entity, PrimaryColumn, Column, CreateDateColumn, ManyToMany, ManyToOne, OneToMany, JoinColumn } from "typeorm";
+import { Entity, PrimaryColumn, Column, CreateDateColumn, ManyToMany, ManyToOne, OneToMany, JoinColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Transaction {
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn()
     id: number;
 
     @Column()

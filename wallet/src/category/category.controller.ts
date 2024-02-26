@@ -11,31 +11,31 @@ export class CategoryController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
-  create(@Body() createCategoryDto: CreateCategoryDto, @Req() req) {
+  async create(@Body() createCategoryDto: CreateCategoryDto, @Req() req) {
     return this.categoryService.create(createCategoryDto, +req.user.id);
   }
 
   @Get('user')
   @UseGuards(JwtAuthGuard)
-  findAll(@Req() req) {
+  async findAll(@Req() req) {
     return this.categoryService.findAll(+req.user.id);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.categoryService.findOne(+id);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
+  async update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
     return this.categoryService.update(+id, updateCategoryDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  @UseGuards(JwtAuthGuard)
+  async remove(@Param('id') id: string) {
     return this.categoryService.remove(+id);
   }
 }
