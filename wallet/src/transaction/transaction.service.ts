@@ -90,7 +90,6 @@ export class TransactionService {
   }
 
   async findAllWithPagination(id: number, page: number, limit: number) {
-    console.log(id, page, limit)
     const transaction = await this.transactionRepository.find({
       where: {
         user: {id}
@@ -105,7 +104,17 @@ export class TransactionService {
       take: limit,
       skip: (page - 1) * limit,
     })
-    console.log(transaction)
     return transaction
+  }
+
+  async findAllByType(id: number, type: string) {
+    const transactions = await this.transactionRepository.find({
+      where: {
+        user: {id},
+        type
+      },
+    })
+    const summary = transactions.reduce((acc, obj) => acc + obj.amount, 0)
+    return summary
   }
 }
